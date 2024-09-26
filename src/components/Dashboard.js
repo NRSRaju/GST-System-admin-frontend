@@ -163,7 +163,7 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/dashboard');
+      const response = await axios.get('https://gst-system-backend-admin.onrender.com/api/dashboard');
       setDashboardData(response.data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -173,7 +173,7 @@ function Dashboard() {
 
   const fetchInvoices = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/invoices');
+      const response = await axios.get('https://gst-system-backend-admin.onrender.com/api/invoices');
       setInvoices(response.data);
       calculateTotalGSTDue(response.data);
     } catch (error) {
@@ -276,7 +276,7 @@ function Dashboard() {
   const updateInvoiceStatus = async (invoiceId, newStatus) => {
     console.log('Updating invoice:', invoiceId, newStatus);
     try {
-      const response = await axios.put(`http://localhost:5000/api/invoices/${invoiceId}`, { status: newStatus });
+      const response = await axios.put(`https://gst-system-backend-admin.onrender.com/api/invoices/${invoiceId}`, { status: newStatus });
       console.log('Update response:', response.data);
       fetchInvoices();
       toast.success('Invoice status updated successfully');

@@ -119,7 +119,7 @@ function PaymentTracker() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/payments?filter=${filter}`);
+      const response = await axios.get(`https://gst-system-backend-admin.onrender.com/api/payments?filter=${filter}`);
       setPayments(response.data);
       console.log(response.data)
     } catch (error) {

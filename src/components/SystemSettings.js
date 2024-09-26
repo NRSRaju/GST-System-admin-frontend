@@ -413,7 +413,7 @@ const SystemSettings = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/system-settings');
+      const response = await axios.get('https://gst-system-backend-admin.onrender.com/api/system-settings');
       const { notificationTemplates, integrationKeys } = response.data;
       setNotificationTemplates(notificationTemplates);
       setIntegrationKeys(integrationKeys);
@@ -434,7 +434,7 @@ const SystemSettings = () => {
 
   const handleSave = async () => {
     try {
-      await axios.put('http://localhost:5000/api/system-settings', {
+      await axios.put('https://gst-system-backend-admin.onrender.com/api/system-settings', {
         notificationTemplates,
         integrationKeys,
       });

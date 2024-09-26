@@ -8,7 +8,7 @@ function ReminderSidebar() {
   const handleReminderSettingsSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/settings', { reminderDays });
+      await axios.post('https://gst-system-backend-admin.onrender.com/api/settings', { reminderDays });
       toast.success('Reminder settings updated successfully');
     } catch (error) {
       console.error('Error updating reminder settings:', error);
