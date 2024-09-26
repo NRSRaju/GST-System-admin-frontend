@@ -13,7 +13,7 @@ const InvoiceForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://gst-system-backend-admin.onrender.com/api/invoices', {
+      const response = await axios.post('http://localhost:5000/api/invoices', {
         recruiterName,
         amount,
         dueDate, // Include dueDate in the request payload

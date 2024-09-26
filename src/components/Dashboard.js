@@ -8,10 +8,10 @@ import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DashboardContainer, AlertContainer, InvoiceTable,Button, Form, Label, AppContainer } from '../styles/StyledComponents';
-import { FaFileExport, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaFileExport, FaSearch, FaFilter,FaFileCsv, FaFileExcel } from 'react-icons/fa';
 import { MdPayment, MdPendingActions } from 'react-icons/md';
 import { BiSortAlt2 } from 'react-icons/bi';
-
+import * as XLSX from 'xlsx';
 
  const InvoiceListContainer = styled.div`
   background-color: #ffffff;
@@ -163,7 +163,7 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get('https://gst-system-backend-admin.onrender.com/api/dashboard');
+      const response = await axios.get('http://localhost:5000/api/dashboard');
       setDashboardData(response.data);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -173,7 +173,7 @@ function Dashboard() {
 
   const fetchInvoices = async () => {
     try {
-      const response = await axios.get('https://gst-system-backend-admin.onrender.com/api/invoices');
+      const response = await axios.get('http://localhost:5000/api/invoices');
       setInvoices(response.data);
       calculateTotalGSTDue(response.data);
     } catch (error) {
@@ -228,13 +228,55 @@ function Dashboard() {
     doc.save('invoice_list.pdf');
   };
 
+  const exportToCSV = () => {
+    const csvData = filteredInvoices.map((invoice) => ({
+      Recruiter: invoice.recruiter && invoice.recruiter.name ? invoice.recruiter.name : 'No Recruiter',
+      Amount: invoice.amount.toFixed(2),
+      'GST Amount': invoice.gstAmount.toFixed(2),
+      'Due Date': new Date(invoice.dueDate).toLocaleDateString(),
+      Status: invoice.status
+    }));
+
+    const csvString = [
+      ['Recruiter', 'Amount', 'GST Amount', 'Due Date', 'Status'],
+      ...csvData.map(row => Object.values(row))
+    ].map(e => e.join(",")).join("\n");
+
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "invoice_list.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const exportToExcel = () => {
+    const wsData = filteredInvoices.map((invoice) => ({
+      Recruiter: invoice.recruiter && invoice.recruiter.name ? invoice.recruiter.name : 'No Recruiter',
+      Amount: invoice.amount,
+      'GST Amount': invoice.gstAmount,
+      'Due Date': new Date(invoice.dueDate),
+      Status: invoice.status
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Invoices");
+    XLSX.writeFile(wb, "invoice_list.xlsx");
+  };
+
   if (error) return <div className="error">{error}</div>;
   if (!dashboardData) return <div className="loading">Loading...</div>;
 
   const updateInvoiceStatus = async (invoiceId, newStatus) => {
     console.log('Updating invoice:', invoiceId, newStatus);
     try {
-      const response = await axios.put(`https://gst-system-backend-admin.onrender.com/api/invoices/${invoiceId}`, { status: newStatus });
+      const response = await axios.put(`http://localhost:5000/api/invoices/${invoiceId}`, { status: newStatus });
       console.log('Update response:', response.data);
       fetchInvoices();
       toast.success('Invoice status updated successfully');
@@ -302,9 +344,21 @@ function Dashboard() {
           />
             <IconWrapper><FaSearch /></IconWrapper>
         </InputWrapper>
-        <Button onClick={exportToPDF}>
+        {/* <Button onClick={exportToPDF}>
           <IconWrapper><FaFileExport /></IconWrapper>
           Export to PDF
+        </Button> */}
+         <Button onClick={exportToPDF}>
+          <IconWrapper><FaFileExport /></IconWrapper>
+          Export to PDF
+        </Button>
+        <Button onClick={exportToCSV}>
+          <IconWrapper><FaFileCsv /></IconWrapper>
+          Export to CSV
+        </Button>
+        <Button onClick={exportToExcel}>
+          <IconWrapper><FaFileExcel /></IconWrapper>
+          Export to Excel
         </Button>
       </FilterContainer>
       <InvoiceTable>

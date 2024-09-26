@@ -119,8 +119,9 @@ function PaymentTracker() {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://gst-system-backend-admin.onrender.com/api/payments?filter=${filter}`);
+      const response = await axios.get(`http://localhost:5000/api/payments?filter=${filter}`);
       setPayments(response.data);
+      console.log(response.data)
     } catch (error) {
       console.error('Error fetching payments:', error);
     } finally {
@@ -151,6 +152,7 @@ function PaymentTracker() {
           <thead>
             <tr>
               <Th>Invoice ID</Th>
+              <Th>Recruiter</Th>
               <Th>Amount</Th>
               <Th>Status</Th>
               <Th>Date</Th>
@@ -158,16 +160,27 @@ function PaymentTracker() {
           </thead>
           <tbody>
             {payments.map((payment) => (
+              // <Tr key={payment._id}>
+              //   <Td>{payment._id}</Td>
+              //   <Td>₹{payment.amount.toFixed(2)}</Td>
+              //   <Td>
+              //     <StatusBadge status={payment.status}>
+              //       {payment.invoiceID.status}
+              //     </StatusBadge>
+              //   </Td>
+              //   <Td>{new Date(payment.transactionDate).toLocaleDateString()}</Td>
+              // </Tr>
               <Tr key={payment._id}>
-                <Td>{payment._id}</Td>
-                <Td>₹{payment.amount.toFixed(2)}</Td>
-                <Td>
-                  <StatusBadge status={payment.status}>
-                    {payment.status}
-                  </StatusBadge>
-                </Td>
-                <Td>{new Date(payment.transactionDate).toLocaleDateString()}</Td>
-              </Tr>
+  <Td>{payment.invoiceID._id}</Td>
+  <Td>{payment.invoiceID.recruiter.name}</Td>
+  <Td>₹{payment.amount.toFixed(2)}</Td>
+  <Td>
+    <StatusBadge status={payment.invoiceID.status}>
+      {payment.invoiceID.status}
+    </StatusBadge>
+  </Td>
+  <Td>{new Date(payment.transactionDate).toLocaleDateString()}</Td>
+</Tr>
             ))}
           </tbody>
         </Table>
